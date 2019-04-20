@@ -28,66 +28,65 @@ void float_out(float* array, int count) {
     printf("\n");
 }
 
-// сортировка merge
-void msort(void* t_array, int array_count, int size, int (*comparator)(const void*, const void*)) {
+
     
-    // рекурсивная часть, сортировка
-    void merge(char* array, int count, int size, int (*comparator)(const void*, const void*)) {
+// рекурсивная часть сортировки
+void merge(char* array, int count, int size, int (*comparator)(const void*, const void*)) {
         
-        if(count == size) {
-            return;
-        }
+    if(count == size) {
+        return;
+    }
 
-        // разбиение
-        int sep = (int) count/(2*size);
-        char array1[sep*size];
-        char array2[count-sep*size];
+    // разбиение
+    int sep = (int) count/(2*size);
+    char array1[sep*size];
+    char array2[count-sep*size];
 
-        int i, k;
-        for(i = 0; i < sep*size; i++) {
-            array1[i] = array[i];
-        }
-        for(i = 0; i < count-sep*size; i++) {
-            array2[i] = array[sep*size+i];
-        }
+    int i, k;
+    for(i = 0; i < sep*size; i++) {
+        array1[i] = array[i];
+    }
+    for(i = 0; i < count-sep*size; i++) {
+        array2[i] = array[sep*size+i];
+    }
 
-        merge(array1, sep*size, size, comparator);
-        merge(array2, count-sep*size, size, comparator);
+    merge(array1, sep*size, size, comparator);
+    merge(array2, count-sep*size, size, comparator);
 
-        // слияние
-        int j1=0, j2=0;
-        for(i = 0; i < count; i+=size) {
-            if(j1 == sep*size) {
-                for(k=0; k<size; k++) {
-                    array[i+k] = array2[j2+k];
-                }
-                j2+=size;
-            } else if(j2 == count-sep*size) {
+    // слияние
+    int j1=0, j2=0;
+    for(i = 0; i < count; i+=size) {
+        if(j1 == sep*size) {
+            for(k=0; k<size; k++) {
+                array[i+k] = array2[j2+k];
+            }
+            j2+=size;
+        } else if(j2 == count-sep*size) {
+            for(k=0; k<size; k++) {
+                array[i+k] = array1[j1+k];
+            }
+            j1+=size;
+        } else {
+            if(comparator(&array1[j1], &array2[j2]) < 0) {
                 for(k=0; k<size; k++) {
                     array[i+k] = array1[j1+k];
                 }
                 j1+=size;
             } else {
-                if(comparator(&array1[j1], &array2[j2]) < 0) {
-                    for(k=0; k<size; k++) {
-                        array[i+k] = array1[j1+k];
-                    }
-                    j1+=size;
-                } else {
-                    for(k=0; k<size; k++) {
-                        array[i+k] = array2[j2+k];
-                    }
-                    j2+=size;
+                for(k=0; k<size; k++) {
+                    array[i+k] = array2[j2+k];
                 }
+                j2+=size;
             }
         }
     }
-    
-    // преобразование массива
+}
+
+// преобразование массива и вызов сортировки
+void msort(void* t_array, int array_count, int size, int (*comparator)(const void*, const void*)) {    
+   
     char *array = (char*)t_array;
     merge(array, array_count*size, size, comparator);
-
-    
 }
 
 // убывающий порядок
@@ -198,7 +197,7 @@ void main() {
 
     msort(array_c, 6, sizeof(char), &zy_sorter);
     char_out(array_c, 6);
-    
+
     
     float_out(array_f, 9);
     
